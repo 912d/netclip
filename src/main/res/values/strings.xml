@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Netclip</string>
+    <string name="side_menu_open">Open side menu</string>
+    <string name="side_menu_close">Close side menu</string>
+</resources>
