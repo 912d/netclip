@@ -131,23 +131,4 @@ public class CommunicationsManager implements ConnectionsManager.ConnectionEvent
     public interface CommunicationEventsListener {
         void onNewReceivedText(ReceivedText rt);
     }
-
-    public class ReceivedText {
-
-        private String text;
-        private String time;
-
-        public ReceivedText(String text, String time) {
-            this.text = text;
-            this.time = time;
-        }
-
-        public String getText() {
-            return this.text;
-        }
-
-        public String getTime() {
-            return this.time;
-        }
-    }
 }

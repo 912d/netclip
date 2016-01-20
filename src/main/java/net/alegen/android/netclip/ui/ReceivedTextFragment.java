@@ -1,5 +1,6 @@
 package net.alegen.android.netclip.ui;
 
+import android.app.FragmentManager;
 import android.app.ListFragment;
 
 import android.os.Bundle;
@@ -9,6 +10,9 @@ import android.os.Message;
 
 import android.util.Log;
 
+import android.view.View;
+
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
@@ -19,6 +23,7 @@ import java.util.Map;
 import java.lang.String;
 
 import net.alegen.android.netclip.netio.CommunicationsManager;
+import net.alegen.android.netclip.netio.ReceivedText;
 import net.alegen.android.netclip.netio.StringsSocket;
 
 public class ReceivedTextFragment
@@ -52,7 +57,7 @@ public class ReceivedTextFragment
         this.setListAdapter(this.simpleAdapter);
 
         CommunicationsManager.getInstance().acquireReceivedTexts();
-        for ( CommunicationsManager.ReceivedText rt : CommunicationsManager.getInstance().getReceivedTexts() )
+        for ( ReceivedText rt : CommunicationsManager.getInstance().getReceivedTexts() )
             this.addReceivedText(rt);
         CommunicationsManager.getInstance().releaseReceivedTexts();
         this.simpleAdapter.notifyDataSetChanged();
@@ -61,7 +66,7 @@ public class ReceivedTextFragment
     }
 
     @Override
-    public void onNewReceivedText(CommunicationsManager.ReceivedText rt){
+    public void onNewReceivedText(ReceivedText rt){
         Log.i("netclip", "ReceivedTextFragment.onNewReceivedText");
         Message message = this.handler.obtainMessage();
         message.obj = rt;
@@ -70,15 +75,22 @@ public class ReceivedTextFragment
 
     public void handleMessage(Message message) {
         Log.i("netclip", "ReceivedTextFragment.handleMessage");
-        CommunicationsManager.ReceivedText rt = (CommunicationsManager.ReceivedText)message.obj;
+        ReceivedText rt = (ReceivedText)message.obj;
         this.addReceivedText(rt);
         this.simpleAdapter.notifyDataSetChanged();
     }
 
-    private void addReceivedText(CommunicationsManager.ReceivedText rt) {
+    private void addReceivedText(ReceivedText rt) {
         Map<String, String> hm = new HashMap<>();
         hm.put("text", rt.getText() );
         hm.put("time", rt.getTime() );
         this.receivedTexts.add(hm);
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        FragmentManager fm = this.getFragmentManager();
+        ReceivedTextDialog rtdialog = new ReceivedTextDialog();
+        rtdialog.show(fm, "received_text_dialog");
     }
 }
