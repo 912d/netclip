@@ -10,7 +10,9 @@ import android.os.Message;
 
 import android.util.Log;
 
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -55,14 +57,30 @@ public class ReceivedTextFragment
             new int[] {android.R.id.text1, android.R.id.text2}
         );
         this.setListAdapter(this.simpleAdapter);
+    }
 
-        CommunicationsManager.getInstance().acquireReceivedTexts();
-        for ( ReceivedText rt : CommunicationsManager.getInstance().getReceivedTexts() )
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.i("netclip", "ReceivedTextFragment.onCreateView");
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+
+        for ( ReceivedText rt : CommunicationsManager.getInstance().getReceivedTextsResource().acquire(
+            "ReceivedTextFragment.onCreate"
+        ) )
             this.addReceivedText(rt);
-        CommunicationsManager.getInstance().releaseReceivedTexts();
+        CommunicationsManager.getInstance().getReceivedTextsResource().release();
         this.simpleAdapter.notifyDataSetChanged();
-
         CommunicationsManager.getInstance().registerCommunicationEventsListener(this);
+
+        return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        Log.i("netclip", "ReceivedTextFragment.onDestroyView");
+        super.onDestroyView();
+        CommunicationsManager.getInstance().unregisterCommunicationEventsListener(this);
+        this.receivedTexts.clear();
     }
 
     @Override
@@ -74,13 +92,14 @@ public class ReceivedTextFragment
     }
 
     public void handleMessage(Message message) {
-        Log.i("netclip", "ReceivedTextFragment.handleMessage");
         ReceivedText rt = (ReceivedText)message.obj;
+        Log.i("netclip", "ReceivedTextFragment.handleMessage - received text - " + rt.getText() );
         this.addReceivedText(rt);
         this.simpleAdapter.notifyDataSetChanged();
     }
 
     private void addReceivedText(ReceivedText rt) {
+        Log.i("netclip", "ReceivedTextFragment.addReceivedText - adding text - " + rt.getText() );
         Map<String, String> hm = new HashMap<>();
         hm.put("text", rt.getText() );
         hm.put("time", rt.getTime() );

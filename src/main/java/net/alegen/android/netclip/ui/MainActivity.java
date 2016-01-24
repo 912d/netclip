@@ -84,8 +84,15 @@ public class MainActivity extends AppCompatActivity {
         this.connectionsFragment = new ConnectionsFragment();
         this.receivedTextFragment = new ReceivedTextFragment();
         FragmentTransaction fragmentTransaction = this.fragmentManager.beginTransaction();
+        /* this.currentFragment = this.receivedTextFragment;
+        fragmentTransaction.add(R.id.main_ui, this.currentFragment); */
+
+        fragmentTransaction.add(R.id.main_ui, this.connectionsFragment);
+        fragmentTransaction.hide(this.connectionsFragment);
+        fragmentTransaction.add(R.id.main_ui, this.receivedTextFragment);
+        fragmentTransaction.show(this.receivedTextFragment);
         this.currentFragment = this.receivedTextFragment;
-        fragmentTransaction.add(R.id.main_ui, this.currentFragment);
+
         fragmentTransaction.commit();
     }
 
@@ -112,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 FragmentTransaction fragmentTransaction = MainActivity.this.fragmentManager.beginTransaction();
-                fragmentTransaction.remove(MainActivity.this.currentFragment);
+                fragmentTransaction.hide(MainActivity.this.currentFragment);
                 if (position == 0) {
                     MainActivity.this.activityTitle = "Received text";
                     MainActivity.this.currentFragment = MainActivity.this.receivedTextFragment;
@@ -120,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
                     MainActivity.this.activityTitle = "Connections";
                     MainActivity.this.currentFragment = MainActivity.this.connectionsFragment;
                 }
-                fragmentTransaction.add(R.id.main_ui, MainActivity.this.currentFragment);
+                fragmentTransaction.show(MainActivity.this.currentFragment);
                 fragmentTransaction.commit();
                 MainActivity.this.sideMenuLayout.closeDrawer(Gravity.LEFT);
                 MainActivity.this.getSupportActionBar().setTitle(MainActivity.this.activityTitle);

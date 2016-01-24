@@ -22,7 +22,7 @@ import java.nio.channels.IllegalBlockingModeException;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.concurrent.Semaphore;
+import net.alegen.android.netclip.util.SemaphoreResource;
 
 public class ConnectionsManager {
 
@@ -41,30 +41,19 @@ public class ConnectionsManager {
     private volatile boolean stopCheckingSocketsThread;
     private volatile boolean checkingSockets;
 
-    private List<StringsSocket> sockets;
-    private Semaphore socketsSemaphore;
+    private SemaphoreResource<List<StringsSocket>> socketsResource;
     private Thread listeningThread;
     private Thread checkSocketsThread;
     private List<ConnectionEventsListener> connectionEventsListeners;
 
     private ConnectionsManager() {
-        this.sockets = new ArrayList<StringsSocket>();
-        this.socketsSemaphore = new Semaphore(1, true);
+        this.socketsResource = new SemaphoreResource<List<StringsSocket>>(
+            new ArrayList<StringsSocket>(),
+            "sockets"
+        );
         this.connectionEventsListeners = new ArrayList<ConnectionEventsListener>();
         this.listening = false;
         this.checkingSockets = false;
-    }
-
-    public void acquireSockets() {
-        try {
-            this.socketsSemaphore.acquire();
-        } catch (InterruptedException ex) {
-            Log.e("netclip", "ConnectionsManager.acquireSockets - exception caught - " + ex.getMessage());
-        }
-    }
-
-    public void releaseSockets() {
-        this.socketsSemaphore.release();
     }
 
     public void startListening() {
@@ -104,12 +93,14 @@ public class ConnectionsManager {
     private void newSocket(Socket socket) {
         try {
             StringsSocket ssocket = new StringsSocket(socket);
-            this.acquireSockets();
-            this.sockets.add(ssocket);
-            this.releaseSockets();
-            if (this.sockets.size() == 1)
+            List<StringsSocket> sockets = this.socketsResource.acquire("ConnectionsManager.newSocket");
+            sockets.add(ssocket);
+            int kSockets = sockets.size();
+            this.socketsResource.release();
+            if (kSockets > 0 && this.checkingSockets == false)
                 this.startCheckingSockets();
-            this.notifyNewConnectionEvent(ssocket);
+            for (ConnectionEventsListener listener : this.connectionEventsListeners)
+                listener.onNewConnection(ssocket, kSockets);
         } catch(IOException ex) {
             Log.e("netclip", "ConnectionsManager.newSocket - exception caught - " + ex.getMessage());
         }
@@ -124,11 +115,14 @@ public class ConnectionsManager {
                     ConnectionsManager.this.stopCheckingSocketsThread = false;
 
                     while (!ConnectionsManager.this.stopCheckingSocketsThread) {
+
                         Log.i("netclip", "ConnectionsManager.startCheckingSockets.Runnable.run - checking closed sockets");
-                        ConnectionsManager.this.acquireSockets();
-                        for (int i = 0; i < ConnectionsManager.this.sockets.size(); i++) {
+                        List<StringsSocket> closedSockets = new ArrayList<StringsSocket>();
+                        List<StringsSocket> sockets = ConnectionsManager.this.socketsResource.acquire("ConnectionsManager.startCheckingSocket.run");
+
+                        for (int i = 0; i < sockets.size(); i++) {
                             boolean closedSocket = false;
-                            StringsSocket socket = ConnectionsManager.this.sockets.get(i);
+                            StringsSocket socket = sockets.get(i);
 
                             try {
                                 socket.getSocket().getOutputStream().write( "netclip.ping\r\n".getBytes("UTF-8") );
@@ -139,12 +133,24 @@ public class ConnectionsManager {
                                 closedSocket = true;
                             }
 
-                            if (closedSocket)
-                                ConnectionsManager.this.closedSocket(socket);
+                            if (closedSocket) {
+                                sockets.remove(socket);
+                                closedSockets.add(socket);
+                                if (sockets.size() == 0)
+                                    ConnectionsManager.this.stopCheckingSocketsThread = true;
+                            }
                         }
-                        ConnectionsManager.this.releaseSockets();
+                        int kSockets = sockets.size();
+
+                        ConnectionsManager.this.socketsResource.release();
+
+                        for (StringsSocket socket : closedSockets) {
+                            for (ConnectionEventsListener listener : ConnectionsManager.this.connectionEventsListeners)
+                                listener.onClosedConnection(socket, kSockets);
+                        }
+
                         try {
-                            Thread.sleep(1 * 60 * 1000);
+                            Thread.sleep(1 * 1000);
                         } catch (IllegalArgumentException | InterruptedException ex) {
                             Log.e("netclip", "ConnectionsManager.startCheckingSockets.Runnable.run - exception caught - " + ex.getMessage());
                         }
@@ -155,13 +161,6 @@ public class ConnectionsManager {
             });
             this.checkSocketsThread.start();
         }
-    }
-
-    private void closedSocket(StringsSocket socket) {
-        this.sockets.remove(socket);
-        if (this.sockets.size() == 0)
-            this.stopCheckingSocketsThread = true;
-        this.notifyClosedConnectionEvent(socket);
     }
 
     public void stopListening() {
@@ -182,20 +181,8 @@ public class ConnectionsManager {
             this.connectionEventsListeners.remove(listener);
     }
 
-    private void notifyNewConnectionEvent(StringsSocket socket) {
-        Log.i("netclip", "ConnectionsManager.notifyNewConnectionEvent - notifying a newly accepted connection");
-        for (ConnectionEventsListener listener : this.connectionEventsListeners)
-            listener.onNewConnection(socket, this.sockets.size());
-    }
-
-    private void notifyClosedConnectionEvent(StringsSocket socket) {
-        Log.i("netclip", "ConnectionsManager.notifyClosedConnectionEvent - notifying a closed connection");
-        for (ConnectionEventsListener listener : this.connectionEventsListeners)
-            listener.onClosedConnection(socket, this.sockets.size());
-    }
-
-    public List<StringsSocket> getSockets() {
-        return this.sockets;
+    public SemaphoreResource<List<StringsSocket>> getSocketsResource() {
+        return this.socketsResource;
     }
 
     public interface ConnectionEventsListener {

@@ -9,6 +9,10 @@ import android.os.Message;
 
 import android.util.Log;
 
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
 import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
@@ -53,27 +57,31 @@ public class ConnectionsFragment
             new int[] {android.R.id.text1, android.R.id.text2}
         );
         this.setListAdapter(this.simpleAdapter);
+    }
 
-        ConnectionsManager.getInstance().acquireSockets();
-        for ( StringsSocket socket : ConnectionsManager.getInstance().getSockets() )
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.i("netclip", "ConnectionsFragment.onCreateView");
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+
+        List<StringsSocket> sockets = ConnectionsManager.getInstance().getSocketsResource().acquire(
+            "ConnectionsFragment.onCreateView"
+        );
+        for ( StringsSocket socket : sockets )
             this.addInfoFromSocket(socket);
-        ConnectionsManager.getInstance().releaseSockets();
+        ConnectionsManager.getInstance().getSocketsResource().release();
         this.simpleAdapter.notifyDataSetChanged();
-
         ConnectionsManager.getInstance().registerConnectionEventsListener(this);
+
+        return view;
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        Log.i("netclip", "ConnectionsFragment.onDestroy");
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.i("netclip", "ConnectionsFragment.onDestroy");
-        super.onDestroy();
+    public void onDestroyView() {
+        Log.i("netclip", "ConnectionsFragment.onDestroyView");
+        super.onDestroyView();
         ConnectionsManager.getInstance().unregisterConnectionEventsListener(this);
+        this.connections.clear();
     }
 
     @Override
@@ -87,7 +95,7 @@ public class ConnectionsFragment
 
     @Override
     public void onClosedConnection(StringsSocket socket, int kConnections) {
-        Log.i("netclip", "ConnectionsFragment.onNewConnection - kConnections = " + String.valueOf(kConnections));
+        Log.i("netclip", "ConnectionsFragment.onClosedConnection - kConnections = " + String.valueOf(kConnections));
         Message message = this.handler.obtainMessage();
         message.what = CLOSED_CONNECTION;
         message.obj = socket;
@@ -97,10 +105,13 @@ public class ConnectionsFragment
     public void handleMessage(Message message) {
         Log.i("netclip", "ConnectionsFragment.handleMessage");
         StringsSocket socket = (StringsSocket)message.obj;
-        if (message.what == NEW_CONNECTION)
+        if (message.what == NEW_CONNECTION) {
+            Log.i("netclip", "ConnectionsFragment.handleMessage - new connection");
             this.addInfoFromSocket(socket);
-        else if (message.what == CLOSED_CONNECTION)
+        } else if (message.what == CLOSED_CONNECTION) {
+            Log.i("netclip", "ConnectionsFragment.handleMessage - closed connection");
             this.removeInfoAboutSocket(socket);
+        }
         this.simpleAdapter.notifyDataSetChanged();
     }
 

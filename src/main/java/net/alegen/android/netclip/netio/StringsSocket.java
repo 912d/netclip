@@ -31,6 +31,15 @@ public class StringsSocket {
         }
     }
 
+    public int readAvailable() {
+        try {
+            return this.socket.getInputStream().available();
+        } catch (IOException ex) {
+            Log.e("netclip", "StringsSocket.readAvailable - exception caught - " + ex.getMessage());
+            return -1;
+        }
+    }
+
     public String readString() {
         try {
             return this.reader.readLine();

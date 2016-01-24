@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import java.util.concurrent.Semaphore;
+import net.alegen.android.netclip.util.SemaphoreResource;
 
 public class CommunicationsManager implements ConnectionsManager.ConnectionEventsListener {
 
@@ -32,15 +32,16 @@ public class CommunicationsManager implements ConnectionsManager.ConnectionEvent
     private volatile boolean stopReadingThread;
 
     private Thread readingThread;
-    private Semaphore receivedTextsSemaphore;
-    private List<ReceivedText> receivedTexts;
+    private SemaphoreResource<List<ReceivedText>> receivedTextsResource;
     private List<CommunicationEventsListener> communicationEventsListeners;
 
     private CommunicationsManager() {
-        this.receivedTexts = new ArrayList<ReceivedText>();
+        this.receivedTextsResource = new SemaphoreResource<List<ReceivedText>>(
+            new ArrayList<ReceivedText>(),
+            "received texts"
+        );
         this.communicationEventsListeners = new ArrayList<CommunicationEventsListener>();
         this.reading = false;
-        this.receivedTextsSemaphore = new Semaphore(1, true);
     }
 
     private void startReading() {
@@ -52,30 +53,34 @@ public class CommunicationsManager implements ConnectionsManager.ConnectionEvent
                     CommunicationsManager.this.stopReadingThread = false;
 
                     while (!CommunicationsManager.this.stopReadingThread) {
-                        ConnectionsManager.getInstance().acquireSockets();
-                        List<StringsSocket> sockets = ConnectionsManager.getInstance().getSockets();
+                        List<StringsSocket> sockets = ConnectionsManager.getInstance().getSocketsResource().acquire(
+                            "CommunicationsManager.startReading.run"
+                        );
                         for (int i = 0; i < sockets.size(); i++) {
                             StringsSocket socket = sockets.get(i);
-                            if (socket.isReadReady())
+                            if (socket.isReadReady() && socket.readAvailable() > 0)
                                 CommunicationsManager.this.newReceivedText( socket.readString() );
                         }
-                        ConnectionsManager.getInstance().releaseSockets();
+                        ConnectionsManager.getInstance().getSocketsResource().release();
                         try {
                             Thread.sleep(500);
                         } catch (IllegalArgumentException | InterruptedException ex) {
-                            Log.e("netclip", "CommunicationsManager.startReading.Runnable.run - exception caught - " + ex.getMessage());
+                            Log.e(
+                                "netclip", "CommunicationsManager.startReading.Runnable.run - exception caught - "
+                                + ex.getMessage()
+                            );
                         }
                     }
 
                     CommunicationsManager.this.reading = false;
                 }
             });
-            this.readingThread.run();
+            this.readingThread.start();
         }
     }
 
-    public List<ReceivedText> getReceivedTexts() {
-        return this.receivedTexts;
+    public SemaphoreResource<List<ReceivedText>> getReceivedTextsResource() {
+        return this.receivedTextsResource;
     }
 
     private void newReceivedText(String text) {
@@ -83,9 +88,8 @@ public class CommunicationsManager implements ConnectionsManager.ConnectionEvent
             text,
             new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date())
         );
-        this.acquireReceivedTexts();
-        this.receivedTexts.add(rt);
-        this.releaseReceivedTexts();
+        this.receivedTextsResource.acquire("CommunicationsManager.newReceivedText").add(rt);
+        this.receivedTextsResource.release();
         this.notifyNewCommunicationEvent(rt);
     }
 
@@ -95,22 +99,10 @@ public class CommunicationsManager implements ConnectionsManager.ConnectionEvent
             listener.onNewReceivedText(rt);
     }
 
-    public void acquireReceivedTexts() {
-        try {
-            this.receivedTextsSemaphore.acquire();
-        } catch (InterruptedException ex) {
-            Log.e("netclip", "CommunicationsManager.acquireReceivedTexts - exception caught - " + ex.getMessage());
-        }
-    }
-
-    public void releaseReceivedTexts() {
-        this.receivedTextsSemaphore.release();
-    }
-
     @Override
     public void onNewConnection(StringsSocket socket, int kConnections) {
         Log.i("netclip", "CommunicationsManager.onNewConnection - kConnections = " + String.valueOf(kConnections));
-        if (kConnections == 1) {
+        if (kConnections > 0 && this.reading == false) {
             Log.i("netclip", "CommunicationsManager.onNewConnection - starting reading thread");
             this.startReading();
         }
@@ -119,13 +111,18 @@ public class CommunicationsManager implements ConnectionsManager.ConnectionEvent
     @Override
     public void onClosedConnection(StringsSocket socket, int kConnections) {
         Log.i("netclip", "CommunicationsManager.onClosedConnection - kConnections = " + String.valueOf(kConnections));
-        if (kConnections == 0)
+        if (kConnections == 0 && this.reading == true)
             this.stopReadingThread = true;
     }
 
     public void registerCommunicationEventsListener(CommunicationEventsListener listener) {
         if (listener != null)
             this.communicationEventsListeners.add(listener);
+    }
+
+    public void unregisterCommunicationEventsListener(CommunicationEventsListener listener) {
+        if (listener != null)
+            this.communicationEventsListeners.remove(listener);
     }
 
     public interface CommunicationEventsListener {
