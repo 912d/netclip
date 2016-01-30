@@ -21,6 +21,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="17sp"
+        android:clickable="true"
         android:minHeight="100dp" />
 
     <TextView
@@ -30,6 +31,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="17sp"
+        android:clickable="true"
         android:minHeight="100dp" />
 
 </LinearLayout>

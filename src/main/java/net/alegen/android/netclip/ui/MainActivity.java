@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private static int currWidth;
     private static int currHeight;
     private static int currOrientation;
+    private static android.content.ClipboardManager androidClipboard;
 
     public static int getCurrWidth() {
         return currWidth;
@@ -60,6 +61,10 @@ public class MainActivity extends AppCompatActivity {
 
     public static int getCurrOrientation() {
         return currOrientation;
+    }
+
+    public static android.content.ClipboardManager getAndroidClipboard() {
+        return androidClipboard;
     }
 
     private String activityTitle;
@@ -117,6 +122,9 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.show(this.receivedTextFragment);
         fragmentTransaction.commit();
         this.currentFragment = this.receivedTextFragment;
+
+        if (androidClipboard == null)
+            androidClipboard = (android.content.ClipboardManager)this.getSystemService(CLIPBOARD_SERVICE);
     }
 
     @Override

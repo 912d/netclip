@@ -109,7 +109,7 @@ public class ReceivedTextFragment
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         FragmentManager fm = this.getFragmentManager();
-        ReceivedTextDialog rtdialog = new ReceivedTextDialog();
+        ReceivedTextDialog rtdialog = new ReceivedTextDialog(position, this.receivedTexts.get(position).get("text"));
         rtdialog.show(fm, null);
     }
 }

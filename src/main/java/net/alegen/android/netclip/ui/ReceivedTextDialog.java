@@ -16,16 +16,23 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import net.alegen.android.netclip.R;
+import net.alegen.android.netclip.util.ClipboardWrapper;
 
-public class ReceivedTextDialog extends DialogFragment {
+public class ReceivedTextDialog
+    extends DialogFragment
+    implements View.OnClickListener {
 
     private TextView lblClipboard;
     private TextView lblDelete;
+    private int index;
+    private String text;
     private int width;
     private int height;
 
-    public ReceivedTextDialog() {
+    public ReceivedTextDialog(int index, String text) {
         super();
+        this.index = index;
+        this.text = text;
         if ( MainActivity.getCurrOrientation() == Configuration.ORIENTATION_PORTRAIT ) {
             this.width = (int)( MainActivity.getCurrWidth() * 0.8 );
             this.height = (int)( MainActivity.getCurrHeight() * 0.6 );
@@ -39,9 +46,21 @@ public class ReceivedTextDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.received_text_dialog, container);
         this.lblClipboard = (TextView)view.findViewById(R.id.lblClipboard);
+        this.lblClipboard.setOnClickListener(this);
         this.lblDelete = (TextView)view.findViewById(R.id.lblDelete);
+        this.lblDelete.setOnClickListener(this);
         this.getDialog().setTitle("Text options");
         return view;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == this.lblClipboard) {
+            ClipboardWrapper.getInstance().setClipboardText(text);
+        } else if (v == this.lblDelete) {
+
+        }
+        this.dismiss();
     }
 
     @Override
