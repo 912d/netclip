@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 
 import android.os.Bundle;
 
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import android.view.Gravity;
@@ -45,6 +46,22 @@ import net.alegen.android.netclip.R;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static int currWidth;
+    private static int currHeight;
+    private static int currOrientation;
+
+    public static int getCurrWidth() {
+        return currWidth;
+    }
+
+    public static int getCurrHeight() {
+        return currHeight;
+    }
+
+    public static int getCurrOrientation() {
+        return currOrientation;
+    }
+
     private String activityTitle;
     private List<String> receivedText;
 
@@ -70,6 +87,15 @@ public class MainActivity extends AppCompatActivity {
         // https://stackoverflow.com/questions/2591036
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        // get visible size of the activity
+        // https://stackoverflow.com/questions/3060619
+        // https://stackoverflow.com/questions/20142133
+        DisplayMetrics dm = new DisplayMetrics();
+        this.getWindowManager().getDefaultDisplay().getMetrics(dm);
+        currWidth = dm.widthPixels;
+        currHeight = dm.heightPixels;
+        currOrientation = this.getResources().getConfiguration().orientation;
+
         this.getSupportActionBar().setTitle(this.activityTitle);
         setContentView(R.layout.activity_main);
 
@@ -83,17 +109,14 @@ public class MainActivity extends AppCompatActivity {
 
         this.connectionsFragment = new ConnectionsFragment();
         this.receivedTextFragment = new ReceivedTextFragment();
+
         FragmentTransaction fragmentTransaction = this.fragmentManager.beginTransaction();
-        /* this.currentFragment = this.receivedTextFragment;
-        fragmentTransaction.add(R.id.main_ui, this.currentFragment); */
-
         fragmentTransaction.add(R.id.main_ui, this.connectionsFragment);
-        fragmentTransaction.hide(this.connectionsFragment);
         fragmentTransaction.add(R.id.main_ui, this.receivedTextFragment);
+        fragmentTransaction.hide(this.connectionsFragment);
         fragmentTransaction.show(this.receivedTextFragment);
-        this.currentFragment = this.receivedTextFragment;
-
         fragmentTransaction.commit();
+        this.currentFragment = this.receivedTextFragment;
     }
 
     @Override

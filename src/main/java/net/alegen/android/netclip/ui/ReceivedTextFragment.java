@@ -110,6 +110,6 @@ public class ReceivedTextFragment
     public void onListItemClick(ListView l, View v, int position, long id) {
         FragmentManager fm = this.getFragmentManager();
         ReceivedTextDialog rtdialog = new ReceivedTextDialog();
-        rtdialog.show(fm, "received_text_dialog");
+        rtdialog.show(fm, null);
     }
 }
