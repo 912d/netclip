@@ -115,6 +115,13 @@ public class CommunicationsManager implements ConnectionsManager.ConnectionEvent
             this.stopReadingThread = true;
     }
 
+    public void deleteText(int index) {
+        this.receivedTextsResource.acquire("CommunicationsManager.newReceivedText").remove(index);
+        this.receivedTextsResource.release();
+        for (CommunicationEventsListener listener : this.communicationEventsListeners)
+            listener.onDeletedText(index);
+    }
+
     public void registerCommunicationEventsListener(CommunicationEventsListener listener) {
         if (listener != null)
             this.communicationEventsListeners.add(listener);
@@ -127,5 +134,6 @@ public class CommunicationsManager implements ConnectionsManager.ConnectionEvent
 
     public interface CommunicationEventsListener {
         void onNewReceivedText(ReceivedText rt);
+        void onDeletedText(int index);
     }
 }

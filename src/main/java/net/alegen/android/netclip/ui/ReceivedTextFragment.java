@@ -32,6 +32,9 @@ public class ReceivedTextFragment
     extends ListFragment
     implements CommunicationsManager.CommunicationEventsListener {
 
+    private static int TEXT_ADDED = 0;
+    private static int TEXT_DELETED = 1;
+
     private List< Map<String, String> > receivedTexts;
     private SimpleAdapter simpleAdapter;
     private Handler handler;
@@ -88,13 +91,27 @@ public class ReceivedTextFragment
         Log.i("netclip", "ReceivedTextFragment.onNewReceivedText");
         Message message = this.handler.obtainMessage();
         message.obj = rt;
+        message.what = TEXT_ADDED;
+        message.sendToTarget();
+    }
+
+    @Override
+    public void onDeletedText(int index) {
+        Log.i("netclip", "ReceivedTextFragment.onNewReceivedText");
+        Message message = this.handler.obtainMessage();
+        message.obj = index;
+        message.what = TEXT_DELETED;
         message.sendToTarget();
     }
 
     public void handleMessage(Message message) {
-        ReceivedText rt = (ReceivedText)message.obj;
-        Log.i("netclip", "ReceivedTextFragment.handleMessage - received text - " + rt.getText() );
-        this.addReceivedText(rt);
+        Log.i("netclip", "ReceivedTextFragment.handleMessage");
+        if (message.what == TEXT_ADDED) {
+            ReceivedText rt = (ReceivedText)message.obj;
+            this.addReceivedText(rt);
+        } else if (message.what == TEXT_DELETED) {
+            this.receivedTexts.remove( (int)message.obj );
+        }
         this.simpleAdapter.notifyDataSetChanged();
     }
 

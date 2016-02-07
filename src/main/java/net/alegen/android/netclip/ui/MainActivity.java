@@ -49,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
     private static int currWidth;
     private static int currHeight;
     private static int currOrientation;
-    private static android.content.ClipboardManager androidClipboard;
+    private static Fragment currentFragment;
+    private static String currentTitle;
 
     public static int getCurrWidth() {
         return currWidth;
@@ -63,14 +64,8 @@ public class MainActivity extends AppCompatActivity {
         return currOrientation;
     }
 
-    public static android.content.ClipboardManager getAndroidClipboard() {
-        return androidClipboard;
-    }
-
-    private String activityTitle;
     private List<String> receivedText;
 
-    private Fragment currentFragment;
     private ConnectionsFragment connectionsFragment;
     private ReceivedTextFragment receivedTextFragment;
 
@@ -85,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
         Log.i("netclip", "MainActivity.onCreate");
         super.onCreate(savedInstanceState);
 
-        this.activityTitle = "Received text";
         this.receivedText = new ArrayList<String>();
 
         // hide notification window
@@ -101,9 +95,7 @@ public class MainActivity extends AppCompatActivity {
         currHeight = dm.heightPixels;
         currOrientation = this.getResources().getConfiguration().orientation;
 
-        this.getSupportActionBar().setTitle(this.activityTitle);
-        setContentView(R.layout.activity_main);
-
+        this.setContentView(R.layout.activity_main);
         this.initSideMenu();
         this.enableSideMenuToggling();
         this.fragmentManager = this.getFragmentManager();
@@ -115,16 +107,14 @@ public class MainActivity extends AppCompatActivity {
         this.connectionsFragment = new ConnectionsFragment();
         this.receivedTextFragment = new ReceivedTextFragment();
 
+        if (currentFragment == null) {
+            currentFragment = this.receivedTextFragment;
+            currentTitle = "Received text";
+        }
         FragmentTransaction fragmentTransaction = this.fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.main_ui, this.connectionsFragment);
-        fragmentTransaction.add(R.id.main_ui, this.receivedTextFragment);
-        fragmentTransaction.hide(this.connectionsFragment);
-        fragmentTransaction.show(this.receivedTextFragment);
+        fragmentTransaction.replace(R.id.main_ui, currentFragment);
         fragmentTransaction.commit();
-        this.currentFragment = this.receivedTextFragment;
-
-        if (androidClipboard == null)
-            androidClipboard = (android.content.ClipboardManager)this.getSystemService(CLIPBOARD_SERVICE);
+        this.getSupportActionBar().setTitle(currentTitle);
     }
 
     @Override
@@ -149,19 +139,24 @@ public class MainActivity extends AppCompatActivity {
         this.sideMenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FragmentTransaction fragmentTransaction = MainActivity.this.fragmentManager.beginTransaction();
-                fragmentTransaction.hide(MainActivity.this.currentFragment);
+                boolean transactionNeeded = true;
                 if (position == 0) {
-                    MainActivity.this.activityTitle = "Received text";
-                    MainActivity.this.currentFragment = MainActivity.this.receivedTextFragment;
+                    MainActivity.currentTitle = "Received text";
+                    MainActivity.currentFragment = MainActivity.this.receivedTextFragment;
                 } else if (position == 1) {
-                    MainActivity.this.activityTitle = "Connections";
-                    MainActivity.this.currentFragment = MainActivity.this.connectionsFragment;
+                    MainActivity.currentTitle = "Connections";
+                    MainActivity.currentFragment = MainActivity.this.connectionsFragment;
+                } else {
+                    Toast.makeText(MainActivity.this, "Not yet implemented :(", Toast.LENGTH_SHORT).show();
+                    transactionNeeded = false;
                 }
-                fragmentTransaction.show(MainActivity.this.currentFragment);
-                fragmentTransaction.commit();
-                MainActivity.this.sideMenuLayout.closeDrawer(Gravity.LEFT);
-                MainActivity.this.getSupportActionBar().setTitle(MainActivity.this.activityTitle);
+                if (transactionNeeded) {
+                    FragmentTransaction fragmentTransaction = MainActivity.this.fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_ui, MainActivity.currentFragment);
+                    fragmentTransaction.commit();
+                    MainActivity.this.sideMenuLayout.closeDrawer(Gravity.LEFT);
+                    MainActivity.this.getSupportActionBar().setTitle(MainActivity.currentTitle);
+                }
             }
         });
     }
@@ -187,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             // called when a drawer has settled in a completely closed state
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                MainActivity.this.getSupportActionBar().setTitle(MainActivity.this.activityTitle);
+                MainActivity.this.getSupportActionBar().setTitle(MainActivity.currentTitle);
                 MainActivity.this.invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };

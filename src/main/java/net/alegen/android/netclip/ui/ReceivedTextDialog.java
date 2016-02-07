@@ -16,7 +16,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import net.alegen.android.netclip.R;
-import net.alegen.android.netclip.util.ClipboardWrapper;
+import net.alegen.android.netclip.netio.CommunicationsManager;
+import net.alegen.android.netclip.util.Clipboard;
 
 public class ReceivedTextDialog
     extends DialogFragment
@@ -55,11 +56,10 @@ public class ReceivedTextDialog
 
     @Override
     public void onClick(View v) {
-        if (v == this.lblClipboard) {
-            ClipboardWrapper.getInstance().setClipboardText(text);
-        } else if (v == this.lblDelete) {
-
-        }
+        if (v == this.lblClipboard)
+            Clipboard.getInstance( this.getContext() ).setClipboardText(this.text);
+        else if (v == this.lblDelete)
+            CommunicationsManager.getInstance().deleteText(this.index);
         this.dismiss();
     }
 
