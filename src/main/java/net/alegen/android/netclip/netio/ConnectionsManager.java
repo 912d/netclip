@@ -150,7 +150,7 @@ public class ConnectionsManager {
                         }
 
                         try {
-                            Thread.sleep(1 * 60 * 1000);
+                            Thread.sleep(1 * 1000);
                         } catch (IllegalArgumentException | InterruptedException ex) {
                             Log.e("netclip", "ConnectionsManager.startCheckingSockets.Runnable.run - exception caught - " + ex.getMessage());
                         }

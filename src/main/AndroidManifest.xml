@@ -17,7 +17,7 @@
 
     <application
         android:label="@string/app_name"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/netclip_icon"
         android:theme="@style/BaseTheme"
         android:debuggable="false" >
 

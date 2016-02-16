@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ConnectionsFragment connectionsFragment;
     private ReceivedTextFragment receivedTextFragment;
+    private SendTextFragment sendTextFragment;
 
     private ActionBarDrawerToggle sideMenuToggle;
     private ArrayAdapter<String> adapter;
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         this.connectionsFragment = new ConnectionsFragment();
         this.receivedTextFragment = new ReceivedTextFragment();
+        this.sendTextFragment = new SendTextFragment();
 
         if (currentFragment == null) {
             currentFragment = this.receivedTextFragment;
@@ -146,6 +148,9 @@ public class MainActivity extends AppCompatActivity {
                 } else if (position == 1) {
                     MainActivity.currentTitle = "Connections";
                     MainActivity.currentFragment = MainActivity.this.connectionsFragment;
+                } else if (position == 2) {
+                    MainActivity.currentTitle = "Send text";
+                    MainActivity.currentFragment = MainActivity.this.sendTextFragment;
                 } else {
                     Toast.makeText(MainActivity.this, "Not yet implemented :(", Toast.LENGTH_SHORT).show();
                     transactionNeeded = false;
