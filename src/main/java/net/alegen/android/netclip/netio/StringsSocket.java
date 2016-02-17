@@ -54,6 +54,6 @@ public class StringsSocket {
 
     public synchronized boolean writeString(String s) {
         this.writer.write(s + "\n");
-        return this.writer.checkError();
+        return ( !this.writer.checkError() );
     }
 }
