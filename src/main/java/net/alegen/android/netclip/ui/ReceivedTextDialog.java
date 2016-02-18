@@ -57,7 +57,7 @@ public class ReceivedTextDialog
     @Override
     public void onClick(View v) {
         if (v == this.lblClipboard)
-            Clipboard.getInstance( this.getContext() ).setClipboardText(this.text);
+            Clipboard.getInstance( this.getContext() ).setClipboardTextAndClean(this.text);
         else if (v == this.lblDelete)
             CommunicationsManager.getInstance().deleteText(this.index);
         this.dismiss();

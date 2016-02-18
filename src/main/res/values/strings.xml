@@ -3,4 +3,8 @@
     <string name="app_name">Netclip</string>
     <string name="side_menu_open">Open side menu</string>
     <string name="side_menu_close">Close side menu</string>
+    <string name="license">Copyright (C) 2016 Alexandru B. Geana\nLicensed under GNU GPLv3\nCode avaialble online at\ngithub.com/alegen/netclip</string>
+    <string name="hello">If you want to get in contact or just chat\nyou can reach me at\ncontact@alegen.net\nor on Freenode with the nick\nalegen</string>
+    <string name="bitcoin_address">1862EpKxs4BGUM6Td2Gs83QCkVC889Eqja</string>
+    <string name="litecoin_address">LeVnnmu7YLsoHjr9Rc1G3yFmtmvvLMAQmP</string>
 </resources>

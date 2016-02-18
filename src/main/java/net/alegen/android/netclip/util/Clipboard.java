@@ -33,14 +33,14 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
     private ClipboardManager androidClipboard;
     private ClipboardCleanRunnable currentCleanRunnable;
     private Thread currentCleanThread;
-    private volatile boolean appChangedClipboard;
+    private volatile boolean continueCleanThread;
     private Handler handler;
 
     private Clipboard(Context context) {
         this.context = context;
         this.androidClipboard = (ClipboardManager)this.context.getSystemService(context.CLIPBOARD_SERVICE);
         this.androidClipboard.addPrimaryClipChangedListener(this);
-        this.appChangedClipboard = false;
+        this.continueCleanThread = false;
 
         this.handler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -53,7 +53,19 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
     public void setClipboardText(String text) {
         Log.i("netclip", "Clipboard.setClipboardText - " + text);
         this.stopCurrentCleanThread();
-        this.appChangedClipboard = true;
+        this.androidClipboard.setPrimaryClip(
+            ClipData.newPlainText("netclip", text)
+        );
+
+        Message message = this.handler.obtainMessage();
+        message.obj = "Copied to clipboard";
+        message.sendToTarget();
+    }
+
+    public void setClipboardTextAndClean(String text) {
+        Log.i("netclip", "Clipboard.setClipboardText - " + text);
+        this.stopCurrentCleanThread();
+        this.continueCleanThread = true;
         this.androidClipboard.setPrimaryClip(
             ClipData.newPlainText("netclip", text)
         );
@@ -63,17 +75,17 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         this.currentCleanThread.start();
 
         Message message = this.handler.obtainMessage();
-        message.obj = "Text copied to clipboard";
+        message.obj = "Copied to clipboard";
         message.sendToTarget();
     }
 
     @Override
     public void onPrimaryClipChanged() {
-        Log.i("netclip", "Clipboard.onPrimaryClipChanged - " + String.valueOf(this.appChangedClipboard));
-        if (this.appChangedClipboard == false)
+        Log.i("netclip", "Clipboard.onPrimaryClipChanged - " + String.valueOf(this.continueCleanThread));
+        if (this.continueCleanThread == false)
             this.stopCurrentCleanThread();
         else
-            this.appChangedClipboard = false;
+            this.continueCleanThread = false;
     }
 
     private synchronized void stopCurrentCleanThread() {
@@ -87,7 +99,7 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
     }
 
     public synchronized void reset() {
-        this.appChangedClipboard = true;
+        //this.continueCleanThread = false;
         this.androidClipboard.setPrimaryClip(
             ClipData.newPlainText("netclip", "")
         );

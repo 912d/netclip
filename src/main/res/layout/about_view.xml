@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:gravity="center" >
+
+    <LinearLayout
+        android:id="@+id/send_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+
+        <TextView
+            android:id="@+id/lblLicense"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/license"
+            android:textStyle="bold"
+            android:clickable="false"
+            android:layout_marginTop="75dp"
+            android:layout_marginBottom="30dp" />
+
+        <TextView
+            android:id="@+id/lblHello"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/hello"
+            android:clickable="false"
+            android:layout_marginBottom="50dp" />
+
+        <TextView
+            android:id="@+id/lblDonations"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Donations"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/lblDonations"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="( click on addresses to copy to clipboard )"
+            android:layout_marginBottom="15dp" />
+
+        <TextView
+            android:id="@+id/lblBitcoinText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Bitcoin" />
+
+        <TextView
+            android:id="@+id/lblBitcoinAddress"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:clickable="true"
+            android:text="@string/bitcoin_address"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:id="@+id/lblLitecoinText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Litecoin" />
+
+        <TextView
+            android:id="@+id/lblLitecoinAddress"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:clickable="true"
+            android:text="@string/litecoin_address" />
+
+    </LinearLayout>
+
+</ScrollView>
