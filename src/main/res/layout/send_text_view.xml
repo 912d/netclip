@@ -30,7 +30,7 @@
 
         <Spinner
             android:id="@+id/spConnectedHosts"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20px"
             android:gravity="center" />
@@ -39,14 +39,14 @@
 
     <EditText
         android:id="@+id/edtTextToSend"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="55" />
 
     <TextView
         android:id="@+id/lblSendText"
         android:text="Send"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
         android:layout_weight="15"
@@ -55,7 +55,7 @@
     <TextView
         android:id="@+id/lblClearText"
         android:text="Clear"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
         android:layout_weight="15"

@@ -7,4 +7,10 @@
     <string name="hello">If you want to get in contact or just chat\nyou can reach me at\ncontact@alegen.net\nor on Freenode with the nick\nalegen</string>
     <string name="bitcoin_address">1862EpKxs4BGUM6Td2Gs83QCkVC889Eqja</string>
     <string name="litecoin_address">LeVnnmu7YLsoHjr9Rc1G3yFmtmvvLMAQmP</string>
+    <string name="help_1">To connect, first join the same network on your Android device as your laptop or desktop. For example, in a home network, this would most probably mean joining the WiFi network on your phone.</string>
+    <string name="help_2">Once the devices are on the same network, from your laptop, use the telnet command to connect to your device. For this, you need to know the IP address of your phone. This address usually looks something like 192.168.x.y. The application listens for incoming connections on port 5541. The telnet command needs to be executed from a command prompt (cmd) on Windows, or in a terminal on Linux. The command for connecting is simply</string>
+    <string name="help_3">telnet 192.168.x.y 5541</string>
+    <string name="help_4">On Windows, telnet is not installed by default. Simply searching on Google for \"install telnet windows\" will present you with the list of steps which you need to follow.</string>
+    <string name="help_5">For more information, you can check the FAQ at</string>
+    <string name="help_6">[to be added]</string>
 </resources>

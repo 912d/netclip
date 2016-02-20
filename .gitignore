@@ -34,3 +34,6 @@ captures/
 # vim files
 *.swo
 *.swp
+
+# keystore
+*.jks

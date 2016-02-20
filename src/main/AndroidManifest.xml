@@ -18,8 +18,7 @@
     <application
         android:label="@string/app_name"
         android:icon="@drawable/netclip_icon"
-        android:theme="@style/BaseTheme"
-        android:debuggable="false" >
+        android:theme="@style/BaseTheme" >
 
         <activity
             android:name="net.alegen.android.netclip.ui.MainActivity"

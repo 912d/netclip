@@ -9,70 +9,54 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:orientation="vertical" >
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/license"
-            android:textStyle="bold"
-            android:clickable="false"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="50dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/hello"
-            android:clickable="false"
-            android:layout_marginBottom="50dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Donations"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="( click on addresses to copy to clipboard )"
-            android:layout_marginBottom="15dp" />
-
-        <TextView
-            android:id="@+id/lblBitcoinText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Bitcoin" />
-
-        <TextView
-            android:id="@+id/lblBitcoinAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:clickable="true"
-            android:text="@string/bitcoin_address"
+            android:text="@string/help_1"
+            android:layout_marginTop="30dp"
             android:layout_marginBottom="10dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Litecoin" />
+            android:text="@string/help_2"
+            android:layout_marginBottom="10dp" />
 
         <TextView
-            android:id="@+id/lblLitecoinAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:clickable="true"
-            android:layout_marginBottom="20dp"
-            android:text="@string/litecoin_address" />
+            android:textStyle="bold"
+            android:text="@string/help_3"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/help_4"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/help_5"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="@string/help_6"
+            android:layout_marginBottom="30dp" />
 
     </LinearLayout>
 

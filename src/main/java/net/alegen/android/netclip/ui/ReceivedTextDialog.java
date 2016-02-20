@@ -30,10 +30,16 @@ public class ReceivedTextDialog
     private int width;
     private int height;
 
-    public ReceivedTextDialog(int index, String text) {
+    public ReceivedTextDialog() {
         super();
-        this.index = index;
-        this.text = text;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.received_text_dialog, container);
+
+        this.index = this.getArguments().getShort("index");
+        this.text = this.getArguments().getCharSequence("text").toString();
         if ( MainActivity.getCurrOrientation() == Configuration.ORIENTATION_PORTRAIT ) {
             this.width = (int)( MainActivity.getCurrWidth() * 0.8 );
             this.height = (int)( MainActivity.getCurrHeight() * 0.6 );
@@ -41,11 +47,7 @@ public class ReceivedTextDialog
             this.width = (int)( MainActivity.getCurrWidth() * 0.5 );
             this.height = (int)( MainActivity.getCurrHeight() * 0.9 );
         }
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.received_text_dialog, container);
         this.lblClipboard = (TextView)view.findViewById(R.id.lblClipboard);
         this.lblClipboard.setOnClickListener(this);
         this.lblDelete = (TextView)view.findViewById(R.id.lblDelete);

@@ -21,6 +21,15 @@ android {
         versionName "1.0"
     }
 
+    signingConfigs {
+        release {
+            storeFile file("android-keystore.jks")
+            storePassword System.console().readLine("\nKeystore password: ")
+            keyAlias "netclip"
+            keyPassword System.console().readLine("\nKey password: ")
+        }
+    }
+
     buildTypes {
         debug {
             debuggable true
@@ -28,6 +37,7 @@ android {
         release {
             minifyEnabled false
             proguardFile getDefaultProguardFile('proguard-android.txt')
+            signingConfig signingConfigs.release
         }
     }
 }

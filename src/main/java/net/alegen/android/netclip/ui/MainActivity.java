@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private ConnectionsFragment connectionsFragment;
     private ReceivedTextFragment receivedTextFragment;
     private SendTextFragment sendTextFragment;
+    private HelpFragment helpFragment;
     private AboutFragment aboutFragment;
 
     private ActionBarDrawerToggle sideMenuToggle;
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         this.connectionsFragment = new ConnectionsFragment();
         this.receivedTextFragment = new ReceivedTextFragment();
         this.sendTextFragment = new SendTextFragment();
+        this.helpFragment = new HelpFragment();
         this.aboutFragment = new AboutFragment();
 
         if (currentFragment == null) {
@@ -153,6 +155,9 @@ public class MainActivity extends AppCompatActivity {
                 } else if (position == 2) {
                     MainActivity.currentTitle = "Send text";
                     MainActivity.currentFragment = MainActivity.this.sendTextFragment;
+                } else if (position == 3) {
+                    MainActivity.currentTitle = "Help";
+                    MainActivity.currentFragment = MainActivity.this.helpFragment;
                 } else if (position == 4) {
                     MainActivity.currentTitle = "About";
                     MainActivity.currentFragment = MainActivity.this.aboutFragment;

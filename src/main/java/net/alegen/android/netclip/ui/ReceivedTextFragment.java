@@ -126,7 +126,11 @@ public class ReceivedTextFragment
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         FragmentManager fm = this.getFragmentManager();
-        ReceivedTextDialog rtdialog = new ReceivedTextDialog(position, this.receivedTexts.get(position).get("text"));
+        ReceivedTextDialog rtdialog = new ReceivedTextDialog();
+        Bundle args = new Bundle();
+        args.putShort( "index", (short)position );
+        args.putCharSequence( "text", this.receivedTexts.get(position).get("text") );
+        rtdialog.setArguments(args);
         rtdialog.show(fm, null);
     }
 }
