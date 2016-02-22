@@ -39,9 +39,9 @@ public class AboutFragment
     public void onClick(View v) {
         String address = "";
         if (v == this.lblBitcoinAddress)
-            address = this.getContext().getString(R.string.bitcoin_address);
+            address = this.getActivity().getString(R.string.bitcoin_address);
         else if (v == this.lblLitecoinAddress)
-            address = this.getContext().getString(R.string.litecoin_address);
-        Clipboard.getInstance( this.getContext() ).setClipboardText(address);
+            address = this.getActivity().getString(R.string.litecoin_address);
+        Clipboard.getInstance( this.getActivity() ).setClipboardText(address);
     }
 }

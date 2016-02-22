@@ -70,7 +70,7 @@ public class SendTextFragment
 
         this.spinnerList = new ArrayList<String>();
         this.spinnerAdapter = new ArrayAdapter<String>(
-            this.getContext(),
+            this.getActivity(),
             android.R.layout.simple_spinner_dropdown_item,
             this.spinnerList
         );
@@ -147,7 +147,7 @@ public class SendTextFragment
             }
         } else if (message.what == TOAST_MESSAGE) {
             String s = (String)message.obj;
-            Toast.makeText(this.getContext(), s, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.getActivity(), s, Toast.LENGTH_SHORT).show();
         }
         this.spinnerAdapter.notifyDataSetChanged();
     }

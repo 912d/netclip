@@ -50,7 +50,7 @@ public class ConnectionsFragment
 
         this.connections = new ArrayList< Map<String, String> >();
         this.simpleAdapter = new SimpleAdapter(
-            this.getContext(),
+            this.getActivity(),
             this.connections,
             android.R.layout.simple_list_item_2,
             new String[] {"address", "port"},
