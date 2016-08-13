@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import net.alegen.android.netclip.netio.ConnectionsManager;
 import net.alegen.android.netclip.netio.StringsSocket;
@@ -159,11 +160,13 @@ public class SendTextFragment
                 "SendTextFragment.onClick"
             );
             int sckIndex = this.spConnectedHosts.getSelectedItemPosition();
+            if (sckIndex < 1) return;
             StringsSocket receiver = sockets.get(sckIndex);
+
             boolean result = receiver.writeString( this.edtTextToSend.getText().toString() );
             Message message = this.handler.obtainMessage();
             message.what = TOAST_MESSAGE;
-            if (result == true) {
+            if (result) {
                 this.edtTextToSend.setText("");
                 message.obj = "Message has been sent";
             } else
@@ -172,7 +175,7 @@ public class SendTextFragment
             ConnectionsManager.getInstance().getSocketsResource().release();
         } else if (v == this.lblClearText) {
             this.edtTextToSend.setText("");
-            this.savedText = "";
+            savedText = "";
         }
     }
 }
